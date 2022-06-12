@@ -13,6 +13,7 @@ const connectDB = require('./db/connect')
 
 //routers
 const authRouter = require('./routes/authroutes')
+const userRouter = require('./routes/userRoutes')
 
 //error middleware
 const errorHandlerMiddleware = require('./middleware/error-handler')
@@ -33,8 +34,8 @@ app.get('/api/v1', (req,res)=> {
     console.log(req.signedCookies);
     res.send('hello world')
 })
-app.use('/api/v1/auth',authRouter)
-
+app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/users', userRouter);
 
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)
