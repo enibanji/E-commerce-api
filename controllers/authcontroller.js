@@ -4,7 +4,7 @@ const {CustomAPIError,
     UnauthenticatedError,
     NotFoundError,
     BadRequestError,} = require('../errors')
-const {createJWT,attachCookieToResponse} = require('../utils')
+const {createTokenUser,attachCookieToResponse} = require('../utils')
 
 
 const register = async(req,res) => {
@@ -18,7 +18,7 @@ const register = async(req,res) => {
     const role = isFirstAccount ? 'admin': 'user';
    
     const user = await User.create({name,email,password,role})
-    const tokenUser = {username: user.name, userId: user._id, role: user.role}
+    const tokenUser = createTokenUser(user)
     // const token = createJWT({payload:tokenUser})
     // const token = user.createJWT()
    
@@ -46,9 +46,9 @@ const login = async(req,res) => {
     if (!checkPassword) {
         throw new UnauthenticatedError('Invalid credentials')
     }
-    const tokenUser = {username: user.name, userId: user._id, role: user.role}
+    const tokenUser = createTokenUser(user)
     attachCookieToResponse({res,user:tokenUser})
-    res.status(StatusCodes.CREATED).json({user:tokenUser})
+    res.status(StatusCodes.OK).json({user:tokenUser})
 }
 
 const logout = async(req,res) => {
