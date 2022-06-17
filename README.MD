@@ -214,7 +214,8 @@
 - [] remember we check already for role 'admin'
 
 #### Upload Image
-
+- [] install express-fileupload
+- [] run express static while passing folder containing images into it.
 - [] if some question, re-watch 07-file-upload
 - [] images folder with two images
 
