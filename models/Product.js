@@ -58,6 +58,10 @@ const productSchema = new mongoose.Schema ({
         type: Number,
         default: 0,
     },
+    numOfReviews:{
+        type: Number,
+        default: 0,
+    },
     user: {
         type: mongoose.Types.ObjectId,
         ref: 'user',
@@ -65,7 +69,19 @@ const productSchema = new mongoose.Schema ({
     }
 
 
-}, {timestamps: true})
+}, {timestamps: true, toJSON:{virtuals:true}, toObject:{virtuals:true}})
 
+//virtuals does not affect the remove hook
+productSchema.virtual('reviews',{
+    ref:'Review',
+    localField:'_id',
+    foreignField: 'product',
+    justOne: false,
+    match : {rating : 5}
+})
+
+productSchema.pre('remove', async function () {
+    await this.model('Review').deleteMany({product: this._id})
+})
 
 module.exports = mongoose.model('product', productSchema)
