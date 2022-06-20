@@ -8,6 +8,11 @@ const app = express()
 const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
 const fileUpload = require('express-fileupload')
+const rateLimiter = require('express-rate-limit')
+const helmet = require('helmet')
+const xss = require('xss-clean')
+const cors = require('cors')
+const mongoSanitize = require('express-mongo-sanitize')
 
 //data base
 const connectDB = require('./db/connect')
@@ -24,6 +29,16 @@ const errorHandlerMiddleware = require('./middleware/error-handler')
 const notFoundMiddleware = require('./middleware/not-found')
 
 
+app.set('trust proxy', 1)
+app.use(rateLimiter({
+	windowMs: 15 * 60 * 1000, // 15 minutes
+	max: 60, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+}));
+app.use(cors());
+app.use(xss());
+app.use(mongoSanitize());
 
 app.use(morgan('tiny'));
 app.use(express.json());
